@@ -1,0 +1,9 @@
+.idea
+.vscode
+.env
+.venv
+bin/
+lib/
+__pycache__/
+env/
+wallart-env/
