@@ -5,3 +5,4 @@ source wallart-env/bin/activate
 pip3 install fastapi 
 pip3 install uvicorn
 uvicorn main:app --reload
+pip3 install -r requirements.txt
