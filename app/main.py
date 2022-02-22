@@ -5,11 +5,18 @@ from sqlalchemy.orm import Session
 from typing import Dict, List, Optional, Tuple
 from products.schemas import Url, Product
 from fastapi.responses import JSONResponse
-
-
-from pprint import pprint
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 models.Base.metadata.create_all(engine)
 
