@@ -63,7 +63,7 @@ def addProducts(current, db):
                                     description = current.description,
                                     rating = current.rating)
     for url in product.urls:
-        product.urls.append(addUrls(product.urls, db))
+        product.urls.append(addUrls(url.urls, db))
         
     db.add(product)
     db.commit()
