@@ -3,7 +3,7 @@ from products import schemas, models
 from products.database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from typing import Dict, List, Optional, Tuple
-from products.schemas import Url, Product
+from products.schemas import Url, Product, Category
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -31,7 +31,6 @@ def get_db():
 @app.post("/product")
 def createProduct(request: schemas.Product, db: Session = Depends(get_db)):
     
-    
     new_product = models.Products(name=request.name, 
                                     price = request.price,
                                     description = request.description,
@@ -48,6 +47,41 @@ def createProduct(request: schemas.Product, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_product)
     return new_product
+
+
+
+def addUrls(urls_list, db):
+    url = models.Url(image_url=urls_list.image_url)
+    db.add(url)
+    db.commit()
+    return url
+
+
+def addProducts(current, db):
+    product = models.Products(name=current.name, 
+                                    price = current.price,
+                                    description = current.description,
+                                    rating = current.rating)
+    for url in product.urls:
+        product.urls.append(addUrls(product.urls, db))
+        
+    db.add(product)
+    db.commit()
+
+    return product
+
+
+@app.post("/category",response_model=Category)
+def createCategory(request: schemas.Category, db: Session = Depends(get_db)):
+    new_category = models.Categories(name=request.name)
+    for current in request.products:
+        new_category.products.append(addProducts(current, db))
+        
+    db.add(new_category)
+    db.commit()
+    db.refresh(new_category)
+    return new_category
+
 
 @app.post("/product/{id}/url")
 def addUrl(request: schemas.Url, db: Session = Depends(get_db)):
@@ -67,12 +101,18 @@ def allProducts(db: Session = Depends(get_db)):
     products = db.query(models.Products).all()
     return products
 
+
+@app.get("/categories",response_model=List[Category])
+def allCategories(db: Session = Depends(get_db)):
+    categories = db.query(models.Categories).all()
+    return categories
+
 @app.get("/urls")
 def allUrls(db: Session = Depends(get_db)):
     urls = db.query(models.Url).all()
     return urls
 
-@app.get("/product/{id}")
+@app.get("/product/{id}",response_model=Product)
 def show(id, db: Session = Depends(get_db)):
     product = db.query(models.Products).filter(models.Products.id == id).first()
     return product

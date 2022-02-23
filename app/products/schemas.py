@@ -19,3 +19,13 @@ class Product(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class Category(BaseModel):
+    id : int 
+    name : str
+    products : List[Product]
+
+    class Config:
+        orm_mode = True
+
