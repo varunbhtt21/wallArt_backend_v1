@@ -28,7 +28,7 @@ def get_db():
         db.close()
 
 
-@app.post("/product")
+@app.post("/product", response_model=Product)
 def createProduct(request: schemas.Product, db: Session = Depends(get_db)):
     
     new_product = models.Products(name=request.name, 
@@ -62,8 +62,8 @@ def addProducts(current, db):
                                     price = current.price,
                                     description = current.description,
                                     rating = current.rating)
-    for url in product.urls:
-        product.urls.append(addUrls(url.urls, db))
+    for url in current.urls:
+        product.urls.append(addUrls(url, db))
         
     db.add(product)
     db.commit()
