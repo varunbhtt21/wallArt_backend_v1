@@ -38,9 +38,19 @@ class Cart(BaseModel):
     class Config:
         orm_mode = True
 
-class CartResponse(BaseModel):
+class CartRequest(BaseModel):
     product_id : int 
     quantity : int
+
+    class Config:
+        orm_mode = True
+
+class CartResponse(BaseModel):
+    product_id : int 
+    product_name : str
+    price : int
+    quantity : int
+    total_price : int
 
     class Config:
         orm_mode = True

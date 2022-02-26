@@ -3,9 +3,10 @@ from products import schemas, models
 from products.database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from typing import Dict, List, Optional, Tuple
-from products.schemas import Url, Product, Category, Cart, CartResponse
+from products.schemas import Url, Product, Category, Cart, CartResponse, CartRequest
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 origins = ["*"]
@@ -101,7 +102,7 @@ def addUrl(request: schemas.Url, db: Session = Depends(get_db)):
     return product
 
 @app.post("/cart/{user_id}",response_model=List[CartResponse])
-def addToCart(request: List[CartResponse],user_id: int, db: Session = Depends(get_db)):
+def checkout(request: List[CartRequest] ,user_id: int, db: Session = Depends(get_db)):
     
     output = []
     for item in request:
@@ -115,8 +116,9 @@ def addToCart(request: List[CartResponse],user_id: int, db: Session = Depends(ge
         db.commit()
         db.refresh(product)
 
-
-        output.append(cart)
+        cartResponse = CartResponse(product_id = product.id, product_name = product.name,
+                         price = product.price, quantity = item.quantity, total_price = product.price*item.quantity)
+        output.append(cartResponse)
     
     return output
 
