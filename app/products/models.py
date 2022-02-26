@@ -5,6 +5,7 @@ from sqlalchemy.sql import func
 
 
 
+
 class Products(Base):
     __tablename__ = 'products'
 
@@ -18,6 +19,8 @@ class Products(Base):
     rating = Column(Integer, nullable=False)
     description = Column(String)
     urls = relationship("Url", back_populates='products')
+
+    cartitems = relationship("CartItems", back_populates='products')
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -39,3 +42,27 @@ class Categories(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+
+# class Cart(Base):
+#     __tablename__ = "cart"
+#     id = Column(Integer, primary_key=True, index=True)
+
+#     cartitems = relationship("CartItems", back_populates='cart')
+
+#     created_at = Column(DateTime(timezone=True), server_default=func.now())
+#     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+
+class CartItems(Base):
+    __tablename__ = "cartitems"
+    id = Column(Integer, primary_key=True, index=True)
+
+    product_id = Column(Integer, ForeignKey('products.id'))
+    products = relationship("Products", back_populates='cartitems')
+
+    quantity = Column(Integer, nullable=False)
+    user_id = Column(Integer, nullable=False)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

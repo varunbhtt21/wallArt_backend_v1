@@ -3,7 +3,7 @@ from products import schemas, models
 from products.database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from typing import Dict, List, Optional, Tuple
-from products.schemas import Url, Product, Category
+from products.schemas import Url, Product, Category, Cart, CartResponse
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -38,7 +38,11 @@ def createProduct(request: schemas.Product, db: Session = Depends(get_db)):
     
     for i in request.urls:
         url = models.Url(image_url=i.image_url)
+        
+        print(new_product.urls)
+
         new_product.urls.append(url)
+        print(new_product.urls)
         db.add(url)
         db.commit()
 
@@ -95,6 +99,32 @@ def addUrl(request: schemas.Url, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(product)
     return product
+
+@app.post("/cart/{user_id}",response_model=List[CartResponse])
+def addToCart(request: List[CartResponse],user_id: int, db: Session = Depends(get_db)):
+    
+    output = []
+    for item in request:
+        product = db.query(models.Products).filter(models.Products.id == item.product_id).first()
+        
+        cart = models.CartItems(quantity=item.quantity, user_id=user_id)
+        product.cartitems.append(cart)
+
+        db.add(product)
+        db.add(cart)
+        db.commit()
+        db.refresh(product)
+
+
+        output.append(cart)
+    
+    return output
+
+
+@app.get("/cart",response_model=List[CartResponse])
+def allCartItems(db: Session = Depends(get_db)):
+    cartItems = db.query(models.CartItems).all()
+    return cartItems
 
 @app.get("/products",response_model=List[Product])
 def allProducts(db: Session = Depends(get_db)):

@@ -29,3 +29,19 @@ class Category(BaseModel):
     class Config:
         orm_mode = True
 
+
+class Cart(BaseModel):
+    product_id : int 
+    quantity : int
+    user_id : int
+
+    class Config:
+        orm_mode = True
+
+class CartResponse(BaseModel):
+    product_id : int 
+    quantity : int
+
+    class Config:
+        orm_mode = True
+
