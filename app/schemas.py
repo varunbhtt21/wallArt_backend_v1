@@ -68,19 +68,29 @@ class OrdersRequest(BaseModel):
 
 class OrdersResponse(BaseModel):
     id : str
-    entity : str
     amount : int
-    amount_paid : int
-    amount_due : int
     currency : str
-    receipt : str
-    status : str
-    attempts : int
-    notes : List
     # created_at : str
 
     class Config:
         orm_mode = True
+
+
+# class OrdersResponse(BaseModel):
+#     id : str
+#     entity : str
+#     amount : int
+#     amount_paid : int
+#     amount_due : int
+#     currency : str
+#     receipt : str
+#     status : str
+#     attempts : int
+#     notes : List
+#     # created_at : str
+
+#     class Config:
+#         orm_mode = True
 
 
 
