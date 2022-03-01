@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from typing import Dict, List, Optional, Tuple
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from routes import products, category, cart
+from routes import products, category, cart, orders
 import models
 import database
 
@@ -25,6 +25,7 @@ models.Base.metadata.create_all(engine)
 app.include_router(products.router)
 app.include_router(category.router)
 app.include_router(cart.router)
+app.include_router(orders.router)
 
 
 

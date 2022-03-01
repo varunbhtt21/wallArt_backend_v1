@@ -45,6 +45,7 @@ class CartRequest(BaseModel):
     class Config:
         orm_mode = True
 
+
 class CartResponse(BaseModel):
     product_id : int 
     product_name : str
@@ -55,3 +56,39 @@ class CartResponse(BaseModel):
     class Config:
         orm_mode = True
 
+
+class OrdersRequest(BaseModel):
+    amount : int
+    currency : str
+    receipt : str
+
+    class Config:
+        orm_mode = True
+
+
+class OrdersResponse(BaseModel):
+    id : str
+    entity : str
+    amount : int
+    amount_paid : int
+    amount_due : int
+    currency : str
+    receipt : str
+    status : str
+    attempts : int
+    notes : List
+    # created_at : str
+
+    class Config:
+        orm_mode = True
+
+
+
+class Payment(BaseModel):
+    razorpay_payment_id : str
+    razorpay_order_id : str
+    razorpay_signature : str
+
+    class Config:
+        orm_mode = True
+   
