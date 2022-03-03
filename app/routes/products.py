@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 @router.post("", response_model=Product)
-def createProduct(request: schemas.Product, db: Session = Depends(database.get_db),get_current_user: routes.user.User = Depends(get_current_user)):
+def createProduct(request: schemas.Product, db: Session = Depends(database.get_db),current_user: routes.user.User = Depends(get_current_user)):
     
     new_product = models.Products(name=request.name, 
                                     price = request.price,
@@ -37,7 +37,7 @@ def createProduct(request: schemas.Product, db: Session = Depends(database.get_d
 
 
 @router.post("/{id}/url")
-def addUrl(request: schemas.Url, db: Session = Depends(get_db)):
+def addUrl(request: schemas.Url, db: Session = Depends(get_db), current_user: routes.user.User = Depends(get_current_user)):
     
     url = models.Url(image_url = request.image_url, product_id = request.product_id)
     product = db.query(models.Products).filter(models.Products.id == id).first()
@@ -51,7 +51,7 @@ def addUrl(request: schemas.Url, db: Session = Depends(get_db)):
 
 
 @router.get("/",response_model=List[Product])
-def allProducts(db: Session = Depends(get_db)):
+def allProducts(db: Session = Depends(get_db),current_user: routes.user.User = Depends(get_current_user)):
     products = db.query(models.Products).all()
     return products
 
