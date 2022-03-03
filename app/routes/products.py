@@ -5,7 +5,8 @@ from fastapi import FastAPI, Depends
 from typing import Dict, List, Optional, Tuple
 from schemas import Product
 from sqlalchemy.orm import Session
-
+import routes.user, oauth2
+from oauth2 import get_current_user
 
 router = APIRouter(
     prefix="/product",
@@ -13,7 +14,7 @@ router = APIRouter(
 )
 
 @router.post("", response_model=Product)
-def createProduct(request: schemas.Product, db: Session = Depends(database.get_db)):
+def createProduct(request: schemas.Product, db: Session = Depends(database.get_db),get_current_user: routes.user.User = Depends(get_current_user)):
     
     new_product = models.Products(name=request.name, 
                                     price = request.price,
@@ -22,11 +23,8 @@ def createProduct(request: schemas.Product, db: Session = Depends(database.get_d
     
     for i in request.urls:
         url = models.Url(image_url=i.image_url)
-        
-        print(new_product.urls)
 
         new_product.urls.append(url)
-        print(new_product.urls)
         db.add(url)
         db.commit()
 
