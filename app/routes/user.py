@@ -58,4 +58,7 @@ def get_user(id : int, db: Session = Depends(get_db)):
     return user
 
 
-
+@router.get("", response_model=List[ShowUser])
+def allUsers(db: Session = Depends(get_db)):
+    urls = db.query(models.User).all()
+    return urls
