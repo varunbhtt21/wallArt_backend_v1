@@ -5,7 +5,8 @@ from fastapi import FastAPI, Depends
 from typing import Dict, List, Optional, Tuple
 from schemas import Product, Category
 from sqlalchemy.orm import Session
-
+from oauth2 import get_current_user
+import routes
 
 router = APIRouter(
     prefix="/category",
@@ -46,6 +47,6 @@ def createCategory(request: schemas.Category, db: Session = Depends(get_db)):
 
 
 @router.get("/",response_model=List[Category])
-def allCategories(db: Session = Depends(get_db)):
+def allCategories(db: Session = Depends(get_db),current_user: routes.user.User = Depends(get_current_user)):
     categories = db.query(models.Categories).all()
     return categories

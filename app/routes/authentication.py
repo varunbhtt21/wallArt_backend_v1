@@ -27,6 +27,7 @@ class Login(BaseModel):
         orm_mode = True
 
 
+# def login(request : OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
 
 @router.post("")
 def login(request : Login, db: Session = Depends(get_db)):
