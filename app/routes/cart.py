@@ -5,7 +5,8 @@ from fastapi import FastAPI, Depends
 from typing import Dict, List, Optional, Tuple
 from schemas import CartResponse, CartRequest
 from sqlalchemy.orm import Session
-
+from oauth2 import get_current_user
+import routes
 
 router = APIRouter(
     prefix="/cart",
@@ -15,7 +16,7 @@ router = APIRouter(
 
 
 @router.post("/{user_id}",response_model=List[CartResponse])
-def checkout(request: List[CartRequest] ,user_id: int, db: Session = Depends(get_db)):
+def checkout(request: List[CartRequest] ,user_id: int, db: Session = Depends(get_db),current_user: routes.user.User = Depends(get_current_user)):
     
     output = []
     for item in request:

@@ -47,6 +47,6 @@ def createCategory(request: schemas.Category, db: Session = Depends(get_db)):
 
 
 @router.get("/",response_model=List[Category])
-def allCategories(db: Session = Depends(get_db),current_user: routes.user.User = Depends(get_current_user)):
+def allCategories(db: Session = Depends(get_db)):
     categories = db.query(models.Categories).all()
     return categories
