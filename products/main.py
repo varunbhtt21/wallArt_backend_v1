@@ -17,6 +17,7 @@ def get_db():
 
 @app.post("/product")
 def createProduct(request: schemas.Product, db: Session = Depends(get_db)):
+
     new_product = models.Products(name=request.name, 
                                     price = request.price, image_url = request.image_url,
                                     rating = request.rating)

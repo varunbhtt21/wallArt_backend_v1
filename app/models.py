@@ -4,8 +4,6 @@ from sqlalchemy import Column, Integer, Float, String, JSON, Enum, DateTime, For
 from sqlalchemy.sql import func
 
 
-
-
 class Products(Base):
     __tablename__ = 'products'
 
@@ -43,17 +41,6 @@ class Categories(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
-# class Cart(Base):
-#     __tablename__ = "cart"
-#     id = Column(Integer, primary_key=True, index=True)
-
-#     cartitems = relationship("CartItems", back_populates='cart')
-
-#     created_at = Column(DateTime(timezone=True), server_default=func.now())
-#     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-
-
 class CartItems(Base):
     __tablename__ = "cartitems"
     id = Column(Integer, primary_key=True, index=True)
@@ -62,11 +49,20 @@ class CartItems(Base):
     products = relationship("Products", back_populates='cartitems')
 
     quantity = Column(Integer, nullable=False)
-    user_id = Column(Integer, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    users = relationship("User", back_populates="cartitems")
+
+    status = Column(Integer, nullable=False, default=0)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+
+class Order(Base):
+    __tablename__ = "orders"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    users = relationship("User", back_populates="orders")
 
 
 class User(Base):
@@ -75,6 +71,9 @@ class User(Base):
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     password = Column(String, nullable=False)
+
+    cartitems = relationship("CartItems", back_populates="users")
+    orders = relationship("Order", back_populates="users")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

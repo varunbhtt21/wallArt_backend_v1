@@ -31,7 +31,7 @@ def orderPlaced(request: schemas.OrdersRequest, db: Session = Depends(database.g
 
 
 @router.post("/payment", response_model=str)
-def orderPlaced(request: schemas.Payment, db: Session = Depends(database.get_db)):
+def verifyPayment(request: schemas.Payment, db: Session = Depends(database.get_db)):
     client = razorpay.Client(auth = ('rzp_test_xvp0YKDLxMR9mG', 'zFrRXxSSzxbFYqSrUIwFfYph'))
 
     data_string = json.dumps(request, default=lambda o: o.__dict__)
