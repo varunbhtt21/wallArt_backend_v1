@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 
+
 class Url(BaseModel):
     image_url : str
 
@@ -29,11 +30,19 @@ class Category(BaseModel):
     class Config:
         orm_mode = True
 
+class CategoryFetch(BaseModel):
+    id : int
+    name : str
+    image : str
+
+    class Config:
+        orm_mode = True
+
 
 class Cart(BaseModel):
     product_id : int 
     quantity : int
-    user_id : int
+    products : Product
 
     class Config:
         orm_mode = True
@@ -48,10 +57,10 @@ class CartRequest(BaseModel):
 
 class CartResponse(BaseModel):
     product_id : int 
-    product_name : str
-    price : int
-    quantity : int
-    total_price : int
+    product_name : Optional[str] = None
+    price : Optional[int] = None
+    quantity : Optional[int] = None
+    total_price : Optional[int] = None
 
     class Config:
         orm_mode = True
@@ -61,6 +70,7 @@ class OrdersRequest(BaseModel):
     amount : int
     currency : str
     receipt : str
+    user_id : int
 
     class Config:
         orm_mode = True

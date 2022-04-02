@@ -43,6 +43,7 @@ def createCategory(request: schemas.Category, db: Session = Depends(get_db)):
     db.add(new_category)
     db.commit()
     db.refresh(new_category)
+
     return new_category
 
 
@@ -50,3 +51,8 @@ def createCategory(request: schemas.Category, db: Session = Depends(get_db)):
 def allCategories(db: Session = Depends(get_db)):
     categories = db.query(models.Categories).all()
     return categories
+
+
+
+# @router.get("/fetch",response_model=List[CategoryFetch])
+# def fetchCategory(db: Session = Depends(get_db)):

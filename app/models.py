@@ -36,6 +36,7 @@ class Categories(Base):
     __tablename__ = 'categories'
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False)
+    image = Column(String, nullable=False)
     products = relationship("Products", back_populates="categories")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -52,7 +53,9 @@ class CartItems(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     users = relationship("User", back_populates="cartitems")
 
-    status = Column(Integer, nullable=False, default=0)
+    # With Orders
+    order_id = Column(Integer, ForeignKey('orders.id'))
+    orders = relationship("Order", back_populates="cartitems")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -60,9 +63,19 @@ class CartItems(Base):
 
 class Order(Base):
     __tablename__ = "orders"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True)
+
     user_id = Column(Integer, ForeignKey('users.id'))
     users = relationship("User", back_populates="orders")
+
+    cartitems = relationship("CartItems", back_populates="orders")
+
+    amount = Column(Integer, nullable=False)
+    currency = Column(String(50), nullable=False)
+    receipt = Column(String(50), nullable=False)
+    status = Column(String(50), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
 class User(Base):
