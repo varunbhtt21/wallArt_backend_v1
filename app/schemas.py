@@ -24,7 +24,17 @@ class Product(BaseModel):
 class Category(BaseModel):
     id : int 
     name : str
+    image : str
     products : List[Product]
+
+    class Config:
+        orm_mode = True
+
+
+class FetchCategory(BaseModel):
+    id : int
+    name : str
+    image : str
 
     class Config:
         orm_mode = True

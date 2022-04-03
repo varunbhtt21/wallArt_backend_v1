@@ -1,9 +1,10 @@
+from email.mime import image
 from fastapi import APIRouter
 import schemas, database, models
 from database import get_db
 from fastapi import FastAPI, Depends
 from typing import Dict, List, Optional, Tuple
-from schemas import Product, Category
+from schemas import Product, Category, FetchCategory
 from sqlalchemy.orm import Session
 from oauth2 import get_current_user
 import routes
@@ -36,7 +37,8 @@ def addProducts(current, db):
 
 @router.post("/",response_model=Category)
 def createCategory(request: schemas.Category, db: Session = Depends(get_db)):
-    new_category = models.Categories(name=request.name)
+    new_category = models.Categories(name=request.name, image = request.image)
+    print(vars(new_category))
     for current in request.products:
         new_category.products.append(addProducts(current, db))
         
@@ -48,5 +50,11 @@ def createCategory(request: schemas.Category, db: Session = Depends(get_db)):
 
 @router.get("/",response_model=List[Category])
 def allCategories(db: Session = Depends(get_db)):
+    categories = db.query(models.Categories).all()
+    return categories
+
+
+@router.get("/fetch",response_model=List[FetchCategory])
+def fetchCategory(db: Session = Depends(get_db)):
     categories = db.query(models.Categories).all()
     return categories
