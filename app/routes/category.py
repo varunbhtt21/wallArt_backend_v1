@@ -1,5 +1,6 @@
 from email.mime import image
 from fastapi import APIRouter
+from models import Categories
 import schemas, database, models
 from database import get_db
 from fastapi import FastAPI, Depends
@@ -41,7 +42,9 @@ def createCategory(request: schemas.Category, db: Session = Depends(get_db)):
     print(vars(new_category))
     for current in request.products:
         new_category.products.append(addProducts(current, db))
-        
+    
+    print(new_category)
+
     db.add(new_category)
     db.commit()
     db.refresh(new_category)
@@ -58,3 +61,8 @@ def allCategories(db: Session = Depends(get_db)):
 def fetchCategory(db: Session = Depends(get_db)):
     categories = db.query(models.Categories).all()
     return categories
+
+
+@router.get("/fetch/{id}",response_model=Category)
+def fetchCategoryById(id, db: Session = Depends(get_db)):
+    return db.query(models.Categories).filter(models.Categories.id == id).first()
