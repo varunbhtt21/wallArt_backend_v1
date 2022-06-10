@@ -58,7 +58,24 @@ def get_user(id : int, db: Session = Depends(get_db)):
     return user
 
 
+
+class EmailRequest(BaseModel):
+    email : str
+
+class EmailResponse(BaseModel):
+    user_id : str
+    
+@router.post("/email", response_model=EmailResponse)
+def getEmail(input: EmailRequest, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == input.email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return EmailResponse(user_id = str(user.id))
+
 @router.get("", response_model=List[ShowUser])
 def allUsers(db: Session = Depends(get_db)):
     urls = db.query(models.User).all()
     return urls
+
+
+
