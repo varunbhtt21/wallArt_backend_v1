@@ -26,17 +26,19 @@ def orderPlaced(request: schemas.OrdersRequest, db: Session = Depends(database.g
     data_dictionary = ast.literal_eval(data_string)
     
     payment = client.order.create(data=data_dictionary)
+    print(payment)
    
     return payment
 
 
 @router.post("/payment", response_model=str)
 def orderPlaced(request: schemas.Payment, db: Session = Depends(database.get_db)):
-    client = razorpay.Client(auth = ('rzp_test_xvp0YKDLxMR9mG', 'zFrRXxSSzxbFYqSrUIwFfYph'))
+    client = razorpay.Client(auth = ('rzp_test_gM7JlXIHSp01n4', 'y2WoxmXh0q2yDLSCfKMOsDqc'))
 
     data_string = json.dumps(request, default=lambda o: o.__dict__)
     data_dictionary = ast.literal_eval(data_string)
 
+    print(data_dictionary)
     try:
         status = client.utility.verify_payment_signature(data_dictionary)
         return "success"
