@@ -35,7 +35,8 @@ def orderPlaced(request: schemas.OrdersRequest, db: Session = Depends(database.g
     data_string = json.dumps(request, default=lambda o: o.__dict__)
     data_dictionary = ast.literal_eval(data_string)
     
-    payment = client.order.create(data=data_dictionary)
+    data = { "amount": request.amount, "currency": request.currency, "receipt": request.receipt }
+    payment = client.order.create(data=data)
     print(payment)
    
     return payment
