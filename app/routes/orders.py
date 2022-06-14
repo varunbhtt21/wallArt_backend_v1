@@ -23,8 +23,6 @@ router = APIRouter(
 @router.post("", response_model=schemas.OrdersResponse)
 def orderPlaced(request: schemas.OrdersRequest, db: Session = Depends(database.get_db)):
 
-    os.getenv("CALENDY_CLIENT_ID")
-
     dotenv_path = join(dirname(__file__), ".env")
     load_dotenv(override=True)
     API_KEY = os.environ.get("API_KEY")
@@ -44,16 +42,23 @@ def orderPlaced(request: schemas.OrdersRequest, db: Session = Depends(database.g
 
 @router.post("/payment", response_model=str)
 def orderPlaced(request: schemas.Payment, db: Session = Depends(database.get_db)):
-    client = razorpay.Client(auth = ('rzp_live_C80HDnSFL9Wxmb', 'nIgSCMYd7srvIs3x0aS9OxYs'))
+    
+    dotenv_path = join(dirname(__file__), ".env")
+    load_dotenv(override=True)
+    API_KEY_test = os.environ.get("API_KEY_test")
+    API_SECRET_test = os.environ.get("API_SECRET_test")
 
-    data_string = json.dumps(request, default=lambda o: o.__dict__)
-    data_dictionary = ast.literal_eval(data_string)
+    client = razorpay.Client(auth=(API_KEY_test, API_SECRET_test))
 
-    print(data_dictionary)
+    data = {
+            "razorpay_payment_id": request.razorpay_payment_id,
+            "razorpay_order_id": request.razorpay_order_id,
+            "razorpay_signature": request.razorpay_signature
+    }
+
     try:
-        status = client.utility.verify_payment_signature(data_dictionary)
+        status = client.utility.verify_payment_signature(data)
         return "success"
     except:
         return "failed"
-
 
