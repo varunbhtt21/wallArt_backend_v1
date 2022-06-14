@@ -25,8 +25,8 @@ def orderPlaced(request: schemas.OrdersRequest, db: Session = Depends(database.g
 
     dotenv_path = join(dirname(__file__), ".env")
     load_dotenv(override=True)
-    API_KEY = os.environ.get("API_KEY")
-    API_SECRET = os.environ.get("API_SECRET")
+    API_KEY = os.environ.get("API_KEY_test")
+    API_SECRET = os.environ.get("API_SECRET_test")
 
     client = razorpay.Client(auth=(API_KEY, API_SECRET))
 
@@ -45,10 +45,10 @@ def orderPlaced(request: schemas.Payment, db: Session = Depends(database.get_db)
     
     dotenv_path = join(dirname(__file__), ".env")
     load_dotenv(override=True)
-    API_KEY_test = os.environ.get("API_KEY_test")
-    API_SECRET_test = os.environ.get("API_SECRET_test")
+    API_KEY = os.environ.get("API_KEY_test")
+    API_SECRET = os.environ.get("API_SECRET_test")
 
-    client = razorpay.Client(auth=(API_KEY_test, API_SECRET_test))
+    client = razorpay.Client(auth=(API_KEY, API_SECRET))
 
     data = {
             "razorpay_payment_id": request.razorpay_payment_id,
