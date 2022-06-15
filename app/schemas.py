@@ -67,23 +67,7 @@ class CartResponse(BaseModel):
         orm_mode = True
 
 
-class OrdersRequest(BaseModel):
-    amount : int
-    currency : str
-    receipt : str
 
-    class Config:
-        orm_mode = True
-
-
-class OrdersResponse(BaseModel):
-    id : str
-    amount : int
-    currency : str
-    # created_at : str
-
-    class Config:
-        orm_mode = True
 
 
 # class OrdersResponse(BaseModel):

@@ -2,6 +2,7 @@ from products.database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, Float, String, JSON, Enum, DateTime, ForeignKey
 from sqlalchemy.sql import func
+import enum
 
 
 
@@ -44,16 +45,6 @@ class Categories(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
-# class Cart(Base):
-#     __tablename__ = "cart"
-#     id = Column(Integer, primary_key=True, index=True)
-
-#     cartitems = relationship("CartItems", back_populates='cart')
-
-#     created_at = Column(DateTime(timezone=True), server_default=func.now())
-#     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-
 
 class CartItems(Base):
     __tablename__ = "cartitems"
@@ -79,3 +70,48 @@ class User(Base):
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class OrderStatus(enum.Enum):
+    CREATED = "CREATED"
+    SUCCESS = "SUCCESS"
+    FAILED = "FAILED"
+
+
+class OrderDetails(Base):
+    __tablename__ = "order_details"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False)
+    contact = Column(String(255), nullable=False)
+    address = Column(String(512), nullable=False)
+    pincode = Column(String(255), nullable=False)
+    city = Column(String(255), nullable=False)
+    area = Column(String(255), nullable=False)
+
+    orders = relationship("Orders", back_populates="order_details")
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class Orders(Base):
+    __tablename__ = "orders"
+    id = Column(String(255), primary_key=True, index=True)
+    amount = Column(Integer, nullable=False)
+    amount_paid = Column(Integer, nullable=False)
+    amount_due = Column(Integer, nullable=False)
+    currency = Column(String(255), nullable=False)
+    receipt = Column(String(255), nullable=False)
+    status = Column(Enum(OrderStatus))
+    attempts = Column(Integer, nullable=False)
+    razorpay_payment_id = Column(String(255))
+    razorpay_signature = Column(String(512))
+
+    order_details_id = Column(Integer, ForeignKey(OrderDetails.id))
+    order_details = relationship("OrderDetails", back_populates="orders")
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
