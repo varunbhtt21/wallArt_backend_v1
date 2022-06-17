@@ -51,12 +51,12 @@ class CartItem(BaseModel):
         orm_mode = True
 
 
-@router.get("/",response_model=List[CartItem])
-def allCartItems(db: Session = Depends(get_db)):
+@router.get("/{user_id}",response_model=List[CartItem])
+def allCartItems(user_id: int,db: Session = Depends(get_db)):
     cartItems = db.query(models.CartItems).all()
     allItems = []
     for item in cartItems:
-        product = db.query(models.Products).filter(models.Products.id == item.product_id).first()
+        product = db.query(models.Products).filter(models.Products.id == item.product_id, models.User.id == user_id).first()
         new_cart_item = CartItem(product_id = item.product_id,
                                 name = product.name,
                                 url = product.urls[0].image_url,
