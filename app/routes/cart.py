@@ -1,5 +1,6 @@
 from cgi import print_exception
-from fastapi import APIRouter
+from math import prod
+from fastapi import APIRouter, HTTPException, status
 from models import Url
 import schemas, database, models
 from database import get_db
@@ -53,10 +54,16 @@ class CartItem(BaseModel):
 
 @router.get("/{user_id}",response_model=List[CartItem])
 def allCartItems(user_id: int,db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid user id")
+
     cartItems = db.query(models.CartItems).all()
     allItems = []
     for item in cartItems:
         product = db.query(models.Products).filter(models.Products.id == item.product_id, models.User.id == user_id).first()
+        if product is None:
+            continue
         new_cart_item = CartItem(product_id = item.product_id,
                                 name = product.name,
                                 url = product.urls[0].image_url,
