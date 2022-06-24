@@ -51,7 +51,8 @@ def addUrl(request: schemas.Url, db: Session = Depends(get_db), current_user: ro
 
 
 @router.get("/",response_model=List[Product])
-def allProducts(db: Session = Depends(get_db),current_user: routes.user.User = Depends(get_current_user)):
+def allProducts(db: Session = Depends(get_db)):
+# def allProducts(db: Session = Depends(get_db),current_user: routes.user.User = Depends(get_current_user)):
     products = db.query(models.Products).all()
     return products
 
