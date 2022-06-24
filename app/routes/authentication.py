@@ -71,6 +71,22 @@ def logout(user_id : int, request : List[CartStore], db: Session = Depends(get_d
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid user id")
 
+
+    # Deleting Items in cart
+    cartItems = [(obj.product_id,obj) for obj in db.query(models.CartItems).all() if obj.user_id==user_id]
+    request_cart = [obj.product_id for obj in request] 
+
+    if cartItems:
+        dict(cartItems)
+    
+    for key,value in cartItems:
+        if key not in request_cart:
+            db.delete(value)
+    
+    db.commit()
+    # db.refresh(value)
+            
+
     for val in request:
         cart = db.query(models.CartItems).filter(models.CartItems.product_id == val.product_id,
                                                  models.CartItems.user_id == user_id).first()
