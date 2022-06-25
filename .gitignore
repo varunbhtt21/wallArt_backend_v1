@@ -8,3 +8,5 @@ __pycache__/
 env/
 wallart-env/
 .DS_Store
+nohup.out
+app/.env
