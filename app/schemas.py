@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 
@@ -10,7 +10,7 @@ class Url(BaseModel):
 
 
 class Product(BaseModel):
-    id : int
+    id : int = Field(alias="product_id")
     name : str
     price : int
     urls : List[Url]
@@ -19,6 +19,7 @@ class Product(BaseModel):
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True        
 
 
 class Category(BaseModel):
