@@ -67,37 +67,37 @@ def orderPlaced(request: OrdersRequest, db: Session = Depends(database.get_db)):
     payment = client.order.create(data=data)
     
 
-    if payment["status"]=="created":
-        status = OrderStatus.CREATED
+    # if payment["status"]=="created":
+    #     status = OrderStatus.CREATED
 
-    order = Orders(
-                   id = payment["id"],
-                   amount = payment["amount"],
-                   amount_paid = payment["amount_paid"],
-                   amount_due = payment["amount_due"],
-                   currency = payment["currency"],
-                   receipt = payment["receipt"],
-                   status = status,
-                   attempts = payment["attempts"]
-                   )
+    # order = Orders(
+    #                id = payment["id"],
+    #                amount = payment["amount"],
+    #                amount_paid = payment["amount_paid"],
+    #                amount_due = payment["amount_due"],
+    #                currency = payment["currency"],
+    #                receipt = payment["receipt"],
+    #                status = status,
+    #                attempts = payment["attempts"]
+    #                )
     
-    order_detail = OrderDetails(
-                        name = request.name,
-                        email = request.email,
-                        contact = request.contactNo,
-                        address = request.address,
-                        pincode = request.pincode,
-                        city = request.city,
-                        area = request.area
-                     )
+    # order_detail = OrderDetails(
+    #                     name = request.name,
+    #                     email = request.email,
+    #                     contact = request.contactNo,
+    #                     address = request.address,
+    #                     pincode = request.pincode,
+    #                     city = request.city,
+    #                     area = request.area
+    #                  )
 
    
-    order_detail.orders.append(order)
+    # order_detail.orders.append(order)
    
-    db.add(order_detail)
-    db.add(order)
-    db.commit()
-    db.refresh(order)
+    # db.add(order_detail)
+    # db.add(order)
+    # db.commit()
+    # db.refresh(order)
 
     return payment
 
