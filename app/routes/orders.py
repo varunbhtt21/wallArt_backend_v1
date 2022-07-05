@@ -29,14 +29,14 @@ class OrdersRequest(BaseModel):
     amount : int
     currency : str
     receipt : str
-    name : str
-    email : str
-    contactNo : str
-    address : str
-    pincode : str
-    city : str
-    area : str
-    amount : int
+    # name : str
+    # email : str
+    # contactNo : str
+    # address : str
+    # pincode : str
+    # city : str
+    # area : str
+    
 
     class Config:
         orm_mode = True
