@@ -57,7 +57,7 @@ class OrdersResponse(BaseModel):
 def orderPlaced(request: OrdersRequest, db: Session = Depends(database.get_db)):
 
     
-    client = razorpay.Client(auth=(API_KEY, API_SECRET))
+    client = razorpay.Client(auth=(os.environ.get("API_KEY"), os.environ.get("API_SECRET")))
 
     data = { 
                 "amount": request.amount, 
@@ -66,6 +66,8 @@ def orderPlaced(request: OrdersRequest, db: Session = Depends(database.get_db)):
 
     payment = client.order.create(data=data)
     
+#     key_id,key_secret
+# rzp_test_g7Iw6XOgt0GIUE,IV4Twq5uOGTYDr36oogjTcrj
 
     # if payment["status"]=="created":
     #     status = OrderStatus.CREATED
@@ -106,7 +108,7 @@ def orderPlaced(request: OrdersRequest, db: Session = Depends(database.get_db)):
 @router.post("/payment", response_model=str)
 def orderPlaced(request: schemas.Payment, db: Session = Depends(database.get_db)):
     
-    client = razorpay.Client(auth=(API_KEY, API_SECRET))
+    client = razorpay.Client(auth=(os.environ.get("API_KEY"), os.environ.get("API_SECRET")))
     data = {
             "razorpay_payment_id": request.razorpay_payment_id,
             "razorpay_order_id": request.razorpay_order_id,
