@@ -46,7 +46,6 @@ class OrdersResponse(BaseModel):
     amount : int
     currency : str
     receipt : str
-    
 
     class Config:
         orm_mode = True
@@ -69,37 +68,23 @@ def orderPlaced(request: OrdersRequest, db: Session = Depends(database.get_db)):
 #     key_id,key_secret
 # rzp_test_g7Iw6XOgt0GIUE,IV4Twq5uOGTYDr36oogjTcrj
 
-    # if payment["status"]=="created":
-    #     status = OrderStatus.CREATED
+    if payment["status"]=="created":
+        status = OrderStatus.CREATED
 
-    # order = Orders(
-    #                id = payment["id"],
-    #                amount = payment["amount"],
-    #                amount_paid = payment["amount_paid"],
-    #                amount_due = payment["amount_due"],
-    #                currency = payment["currency"],
-    #                receipt = payment["receipt"],
-    #                status = status,
-    #                attempts = payment["attempts"]
-    #                )
+    order = Orders(
+                   id = payment["id"],
+                   amount = payment["amount"],
+                   amount_paid = payment["amount_paid"],
+                   amount_due = payment["amount_due"],
+                   currency = payment["currency"],
+                   receipt = payment["receipt"],
+                   status = status,
+                   attempts = payment["attempts"]
+                   )
     
-    # order_detail = OrderDetails(
-    #                     name = request.name,
-    #                     email = request.email,
-    #                     contact = request.contactNo,
-    #                     address = request.address,
-    #                     pincode = request.pincode,
-    #                     city = request.city,
-    #                     area = request.area
-    #                  )
-
-   
-    # order_detail.orders.append(order)
-   
-    # db.add(order_detail)
-    # db.add(order)
-    # db.commit()
-    # db.refresh(order)
+    db.add(order)
+    db.commit()
+    db.refresh(order)
 
     return payment
 
@@ -112,7 +97,7 @@ def orderPlaced(request: schemas.Payment, db: Session = Depends(database.get_db)
     data = {
             "razorpay_payment_id": request.razorpay_payment_id,
             "razorpay_order_id": request.razorpay_order_id,
-            "razorpay_signature": request.razorpay_signature
+            "razorpay_signature": request.razorpay_signature,
     }
 
     order = (
@@ -120,6 +105,19 @@ def orderPlaced(request: schemas.Payment, db: Session = Depends(database.get_db)
             .filter(Orders.id == request.razorpay_order_id)
             .first()
         )
+    
+    # Adding Order Detail
+    order_detail = OrderDetails(
+                        name = request.name,
+                        email = request.email,
+                        contact = request.contactNo,
+                        address = request.address,
+                        pincode = request.pincode,
+                        city = request.city,
+                        area = request.area
+                     )
+    order_detail.orders.append(order)
+    db.add(order_detail)
     
     
     order.razorpay_payment_id = request.razorpay_payment_id

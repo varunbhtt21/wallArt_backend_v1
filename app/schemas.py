@@ -93,6 +93,13 @@ class Payment(BaseModel):
     razorpay_payment_id : str
     razorpay_order_id : str
     razorpay_signature : str
+    name : str
+    email : str
+    contactNo : str
+    address : str
+    pincode : str
+    city : str
+    area : str
 
     class Config:
         orm_mode = True
