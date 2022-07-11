@@ -16,6 +16,9 @@ import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 from utils.constants import API_KEY, API_SECRET
+from pydantic import BaseModel, Field
+
+
 
 
 router = APIRouter(
@@ -43,6 +46,7 @@ class OrdersRequest(BaseModel):
 
 
 class OrdersResponse(BaseModel):
+    id : str = Field(alias="order_id")
     amount : int
     currency : str
     receipt : str
@@ -55,18 +59,19 @@ class OrdersResponse(BaseModel):
 @router.post("", response_model=OrdersResponse)
 def orderPlaced(request: OrdersRequest, db: Session = Depends(database.get_db)):
 
-    
     client = razorpay.Client(auth=(os.environ.get("API_KEY"), os.environ.get("API_SECRET")))
 
     data = { 
                 "amount": request.amount, 
                 "currency": request.currency, 
-                "receipt": request.receipt }
-
+                "receipt": request.receipt 
+            }
+    
     payment = client.order.create(data=data)
     
-#     key_id,key_secret
-# rzp_test_g7Iw6XOgt0GIUE,IV4Twq5uOGTYDr36oogjTcrj
+
+# key_id, key_secret
+# rzp_test_g7Iw6XOgt0GIUE, IV4Twq5uOGTYDr36oogjTcrj
 
     if payment["status"]=="created":
         status = OrderStatus.CREATED
@@ -86,7 +91,13 @@ def orderPlaced(request: OrdersRequest, db: Session = Depends(database.get_db)):
     db.commit()
     db.refresh(order)
 
-    return payment
+   
+    return {
+        "order_id" : payment["id"],
+        "amount" : payment["amount"],
+        "currency" : payment["currency"],
+        "receipt" : payment["receipt"]
+    }
 
 
 

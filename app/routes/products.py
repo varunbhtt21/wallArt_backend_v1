@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 import routes.user, oauth2
 from oauth2 import get_current_user
 
+
+
 router = APIRouter(
     prefix="/product",
     tags=['products']

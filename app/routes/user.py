@@ -40,6 +40,7 @@ class ShowUser(BaseModel):
 pwd_cxt = CryptContext(schemes=["bcrypt"], deprecated = "auto")
 
 
+
 @router.post("", response_model=ShowUser)
 def createUser(request : User, db: Session = Depends(get_db)):
     hashed_password = pwd_cxt.hash(request.password)
@@ -49,12 +50,14 @@ def createUser(request : User, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
+
+
+
 @router.get("/{id}", response_model=ShowUser)
 def get_user(id : int, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    
     return user
 
 
@@ -64,13 +67,17 @@ class EmailRequest(BaseModel):
 
 class EmailResponse(BaseModel):
     user_id : str
-    
+
+
+
 @router.post("/email", response_model=EmailResponse)
 def getEmail(input: EmailRequest, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == input.email).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return EmailResponse(user_id = str(user.id))
+
+
 
 @router.get("", response_model=List[ShowUser])
 def allUsers(db: Session = Depends(get_db)):
