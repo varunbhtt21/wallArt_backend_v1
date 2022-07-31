@@ -68,6 +68,8 @@ class User(Base):
     email = Column(String, nullable=False)
     password = Column(String, nullable=False)
 
+    orders = relationship("Orders", back_populates="users")
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -95,6 +97,19 @@ class OrderDetails(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+
+class OrdersProductInfo(Base):
+    __tablename__ = "orders_product_info"
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(String(255))
+    product_id = Column(Integer, ForeignKey('products.id'))
+    products = relationship("Products")
+    quantity = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+
 class Orders(Base):
     __tablename__ = "orders"
     id = Column(String(255), primary_key=True, index=True)
@@ -110,6 +125,9 @@ class Orders(Base):
 
     order_details_id = Column(Integer, ForeignKey(OrderDetails.id))
     order_details = relationship("OrderDetails", back_populates="orders")
+
+    user_id = Column(Integer, ForeignKey(User.id))
+    users = relationship("User", back_populates="orders")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
