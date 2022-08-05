@@ -58,6 +58,63 @@ class UserOrders(BaseModel):
         orm_mode = True
 
 
+
+
+@router.post("/payment", response_model=str)
+def orderPlaced(request: Payment, db: Session = Depends(database.get_db)):
+    
+    client = razorpay.Client(auth=(os.environ.get("API_KEY"), os.environ.get("API_SECRET")))
+    data = {
+            "razorpay_payment_id": request.razorpay_payment_id,
+            "razorpay_order_id": request.razorpay_order_id,
+            "razorpay_signature": request.razorpay_signature,
+    }
+
+    order = (
+            db.query(Orders)
+            .filter(Orders.id == request.razorpay_order_id)
+            .first()
+        )
+    
+    # Adding Order Detail
+    order_detail = OrderDetails(
+                        name = request.name,
+                        email = request.email,
+                        contact = request.contactNo,
+                        address = request.address,
+                        pincode = request.pincode,
+                        city = request.city,
+                        area = request.area
+                     )
+    order_detail.orders.append(order)
+    db.add(order_detail)
+    
+    
+    order.razorpay_payment_id = request.razorpay_payment_id
+    order.razorpay_signature = request.razorpay_signature
+
+    try:
+        status = client.utility.verify_payment_signature(data)
+        order.status = OrderStatus.SUCCESS
+
+        db.add(order)
+        db.commit()
+        db.refresh(order)
+
+        return "success"
+    except:
+        order.status = OrderStatus.FAILED
+
+        db.add(order)
+        db.commit()
+        db.refresh(order)
+
+        return "failed"
+
+
+
+
+
 @router.get("/{user_id}",response_model=List[UserOrders])
 def allOrdersByUser(user_id : int ,db: Session = Depends(get_db)):
     orders = db.query(Orders).filter(Orders.user_id == user_id).all()
@@ -136,54 +193,4 @@ def orderPlaced(user_id : int, request: OrdersRequest, db: Session = Depends(dat
 
 
 
-@router.post("/payment", response_model=str)
-def orderPlaced(request: schemas.Payment, db: Session = Depends(database.get_db)):
-    
-    client = razorpay.Client(auth=(os.environ.get("API_KEY"), os.environ.get("API_SECRET")))
-    data = {
-            "razorpay_payment_id": request.razorpay_payment_id,
-            "razorpay_order_id": request.razorpay_order_id,
-            "razorpay_signature": request.razorpay_signature,
-    }
-
-    order = (
-            db.query(Orders)
-            .filter(Orders.id == request.razorpay_order_id)
-            .first()
-        )
-    
-    # Adding Order Detail
-    order_detail = OrderDetails(
-                        name = request.name,
-                        email = request.email,
-                        contact = request.contactNo,
-                        address = request.address,
-                        pincode = request.pincode,
-                        city = request.city,
-                        area = request.area
-                     )
-    order_detail.orders.append(order)
-    db.add(order_detail)
-    
-    
-    order.razorpay_payment_id = request.razorpay_payment_id
-    order.razorpay_signature = request.razorpay_signature
-
-    try:
-        status = client.utility.verify_payment_signature(data)
-        order.status = OrderStatus.SUCCESS
-
-        db.add(order)
-        db.commit()
-        db.refresh(order)
-
-        return "success"
-    except:
-        order.status = OrderStatus.FAILED
-
-        db.add(order)
-        db.commit()
-        db.refresh(order)
-
-        return "failed"
 
