@@ -144,7 +144,7 @@ def orderPlaced(user_id : int, request: OrdersRequest, db: Session = Depends(dat
     client = razorpay.Client(auth=(os.environ.get("API_KEY"), os.environ.get("API_SECRET")))
 
     data = { 
-                "amount": request.amount, 
+                "amount": request.amount*100, 
                 "currency": request.currency, 
                 "receipt": request.receipt 
             }
@@ -186,7 +186,7 @@ def orderPlaced(user_id : int, request: OrdersRequest, db: Session = Depends(dat
 
     return {
         "order_id" : payment["id"],
-        "amount" : int(payment["amount"])*100,
+        "amount" : payment["amount"],
         "currency" : payment["currency"],
         "receipt" : payment["receipt"]
     }
