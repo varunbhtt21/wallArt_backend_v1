@@ -1,6 +1,6 @@
 from products.database import Base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, Float, String, JSON, Enum, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, Float, String, JSON, Enum, DateTime, ForeignKey,Text
 from sqlalchemy.sql import func
 import enum
 
@@ -69,6 +69,7 @@ class User(Base):
     password = Column(String, nullable=False)
 
     orders = relationship("Orders", back_populates="users")
+    contactus = relationship("ContactUs", back_populates="user")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -133,3 +134,16 @@ class Orders(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
+class ContactUs(Base):
+    __tablename__ = "contact_us"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    message = Column(Text, nullable=False)
+
+    user_id = Column(Integer, ForeignKey(User.id))
+    user = relationship("User", back_populates="contactus")
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

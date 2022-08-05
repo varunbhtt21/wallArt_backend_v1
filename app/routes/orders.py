@@ -59,9 +59,8 @@ class UserOrders(BaseModel):
 
 
 
-
 @router.post("/payment", response_model=str)
-def orderPlaced(request: Payment, db: Session = Depends(database.get_db)):
+def orderVerify(request: Payment, db: Session = Depends(database.get_db)):
     
     client = razorpay.Client(auth=(os.environ.get("API_KEY"), os.environ.get("API_SECRET")))
     data = {
@@ -190,7 +189,5 @@ def orderPlaced(user_id : int, request: OrdersRequest, db: Session = Depends(dat
         "currency" : payment["currency"],
         "receipt" : payment["receipt"]
     }
-
-
 
 

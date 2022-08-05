@@ -1,4 +1,5 @@
 import email
+from email import message
 from http.client import HTTPException
 from urllib import request
 from fastapi import APIRouter, HTTPException, Response, status
@@ -10,6 +11,7 @@ from typing import Dict, List, Optional, Tuple
 from schemas import Product
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+from fastapi.responses import JSONResponse
 import utils
 from utils.hashing import Hash
 
@@ -36,6 +38,17 @@ class ShowUser(BaseModel):
     class Config:
         orm_mode = True
    
+
+
+class ContactUs(BaseModel):
+    name : str
+    email : str
+    message : str
+
+    class Config:
+        orm_mode = True
+
+
 
 pwd_cxt = CryptContext(schemes=["bcrypt"], deprecated = "auto")
 
@@ -83,6 +96,33 @@ def getEmail(input: EmailRequest, db: Session = Depends(get_db)):
 def allUsers(db: Session = Depends(get_db)):
     urls = db.query(models.User).all()
     return urls
+
+
+
+@router.post("/contactus/{user_id}")
+def contactUs(request: ContactUs, user_id : int, db: Session = Depends(database.get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+
+    if user:
+        try:
+            contact_info = models.ContactUs(name = request.name,
+                                            email = request.email,
+                                            message = request.message,
+                                            user_id = user_id)
+            
+            db.add(contact_info)
+            db.commit()
+            db.refresh(contact_info)
+
+            return JSONResponse(status_code=200, 
+                                content={"message": "Success"})
+            
+        except:
+            return JSONResponse(status_code=200, 
+                                content={"message": "Failed"})
+    
+    return JSONResponse(status_code=200, 
+                        content={"message": "User does n't exist"})
 
 
 
