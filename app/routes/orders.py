@@ -18,6 +18,7 @@ import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 from utils.constants import API_KEY, API_SECRET
+from utils.mail import sendEmail
 from pydantic import BaseModel, Field
 
 
@@ -100,6 +101,16 @@ def orderVerify(request: Payment, db: Session = Depends(database.get_db)):
         db.commit()
         db.refresh(order)
 
+        try:
+            message = """\
+            Subject: Hi
+            Your order is successfully placed. 
+            
+            Thankyou for shopping with us."""
+            sendEmail(request.email, message)
+        except:
+            print("Mail Error")
+
         return "success"
     except:
         order.status = OrderStatus.FAILED
@@ -148,6 +159,7 @@ def orderPlaced(user_id : int, request: OrdersRequest, db: Session = Depends(dat
                 "receipt": request.receipt 
             }
     
+
     payment = client.order.create(data=data)
     
 
