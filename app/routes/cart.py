@@ -10,6 +10,7 @@ from schemas import CartResponse, CartRequest
 from sqlalchemy.orm import Session
 from oauth2 import get_current_user
 from pydantic import BaseModel
+from fastapi.responses import JSONResponse
 import routes
 
 router = APIRouter(
@@ -73,4 +74,18 @@ def allCartItems(user_id: int,db: Session = Depends(get_db)):
 
     return allItems
 
- 
+@router.get("/clear/{user_id}")
+def clearCart(user_id:int, db: Session = Depends(get_db)):
+    try:
+        db.query(models.CartItems).filter(models.CartItems.user_id == user_id).delete()
+        db.commit()
+
+    except Exception as e:
+        print(e)
+        return JSONResponse(status_code=502, 
+                            content={"message": "Failed"})
+    
+    return JSONResponse(status_code=200, 
+                        content={"message": "Success"})
+
+    
